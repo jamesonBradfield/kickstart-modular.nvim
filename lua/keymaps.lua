@@ -4,7 +4,21 @@
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-
+vim.keymap.set({'n','v'},'<C-f>',
+  function()
+      local mf = require 'mini.files'
+      -- Toggle logic: if it's open, close it. If closed, open to current buffer's directory.
+      if not mf.close() then
+        mf.open(vim.api.nvim_buf_get_name(0))
+      end
+    end,
+  {desc = 'Toggle mini.files'})
+vim.keymap.set({'n','v'},'<leader>cc', 
+  function()
+    require('codecompanion').toggle()
+  end,
+  {desc = "Toggle CodeCompanion"}
+)
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
 vim.diagnostic.config {

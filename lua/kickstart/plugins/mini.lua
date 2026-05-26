@@ -3,7 +3,52 @@
 return {
   { -- Collection of various small independent plugins/modules
     'nvim-mini/mini.nvim',
+    init = function()
+      if vim.fn.argc() > 0 then
+        local arg = vim.fn.argv(0)
+        if vim.fn.isdirectory(arg) == 1 then
+          require('lazy').load { plugins = { 'mini.nvim' } }
+        end
+      end
+    end,
     config = function()
+      -- Custom filter to hide Godot sidecar files
+      local filter_hide_godot = function(fs_entry)
+        return not vim.endswith(fs_entry.name, '.uid') and not vim.endswith(fs_entry.name, '.import')
+      end
+
+      require('mini.files').setup {
+        content = {
+          filter = filter_hide_godot,
+        },
+        windows = {
+          preview = true,
+          width_focus = 30,
+          width_preview = 50,
+        },
+        options = {
+          use_as_default_explorer = true,
+        },
+      }
+
+      -- Automatically attach Grapple keymap when mini.files opens
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'MiniFilesBufferCreate',
+        callback = function(args)
+          local buf_id = args.data.buf_id
+
+          -- Use <leader>m to match your global Grapple toggle key
+          vim.keymap.set('n', '<leader>m', function()
+            local entry = MiniFiles.get_fs_entry()
+
+            -- Only toggle tags for actual files, not directories
+            if entry and entry.fs_type == 'file' then
+              require('grapple').toggle { path = entry.path }
+              vim.notify('Toggled Grapple tag: ' .. entry.name)
+            end
+          end, { buffer = buf_id, desc = 'Grapple toggle tag (mini.files)' })
+        end,
+      })
       -- Better Around/Inside textobjects
       --
       -- Examples:
