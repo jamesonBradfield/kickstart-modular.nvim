@@ -6,16 +6,12 @@ return {
     init = function()
       if vim.fn.argc() > 0 then
         local arg = vim.fn.argv(0)
-        if vim.fn.isdirectory(arg) == 1 then
-          require('lazy').load { plugins = { 'mini.nvim' } }
-        end
+        if vim.fn.isdirectory(arg) == 1 then require('lazy').load { plugins = { 'mini.nvim' } } end
       end
     end,
     config = function()
       -- Custom filter to hide Godot sidecar files
-      local filter_hide_godot = function(fs_entry)
-        return not vim.endswith(fs_entry.name, '.uid') and not vim.endswith(fs_entry.name, '.import')
-      end
+      local filter_hide_godot = function(fs_entry) return not vim.endswith(fs_entry.name, '.uid') and not vim.endswith(fs_entry.name, '.import') end
 
       require('mini.files').setup {
         content = {
@@ -70,7 +66,56 @@ return {
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
+      require('mini.pick').setup {
+        mappings = {
+          -- Alternate navigation keys (like Telescope/fzf-lua style)
+          move_down_j = {
+            char = '<C-j>',
+            func = function()
+              local pick = require 'mini.pick'
+              local matches = pick.get_picker_matches()
+              if not matches or not matches.all_inds then return end
+              local n = #matches.all_inds
+              if n == 0 then return end
+              local cur = matches.current_ind or 1
+              local next = cur + 1
+              if next > n then next = 1 end
+              pick.set_picker_match_inds({ matches.all_inds[next] }, 'current')
+            end,
+          },
+          move_up_k = {
+            char = '<C-k>',
+            func = function()
+              local pick = require 'mini.pick'
+              local matches = pick.get_picker_matches()
+              if not matches or not matches.all_inds then return end
+              local n = #matches.all_inds
+              if n == 0 then return end
+              local cur = matches.current_ind or 1
+              local prev = cur - 1
+              if prev < 1 then prev = n end
+              pick.set_picker_match_inds({ matches.all_inds[prev] }, 'current')
+            end,
+          },
+        },
 
+        window = {
+          -- VSCode-style centered picker (command palette look)
+          config = function()
+            local width = math.floor(0.55 * vim.o.columns)
+            local height = math.floor(0.35 * vim.o.lines)
+            return {
+              relative = 'editor',
+              anchor = 'NW',
+              width = width,
+              height = height,
+              row = 2,
+              col = math.floor(0.5 * (vim.o.columns - width)),
+              border = 'rounded',
+            }
+          end,
+        },
+      }
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin

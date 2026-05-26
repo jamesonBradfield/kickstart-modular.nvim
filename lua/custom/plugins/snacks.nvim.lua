@@ -1,5 +1,5 @@
 return {
-  "folke/snacks.nvim",
+  'folke/snacks.nvim',
   priority = 1000,
   lazy = false,
   ---@type snacks.Config
@@ -11,7 +11,7 @@ return {
     dashboard = { enabled = true },
     indent = { enabled = true },
     input = { enabled = true },
-    picker = { enabled = true },
+    picker = { enabled = false },
     notifier = { enabled = true },
     quickfile = { enabled = true },
     scope = { enabled = true },
@@ -20,7 +20,6 @@ return {
     words = { enabled = true },
   },
   keys = {
-    { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
-
-  }
+    { '<leader>n', function() Snacks.notifier.show_history() end, desc = 'Notification History' },
+  },
 }
