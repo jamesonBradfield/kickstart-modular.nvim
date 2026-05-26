@@ -8,7 +8,18 @@ vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
 -- vim.o.relativenumber = true
+-- 1. Shrink the number column padding (default is 4)
+vim.opt.numberwidth = 2
 
+-- 2. Restrict the sign column to a single character width
+vim.opt.signcolumn = 'yes:1'
+
+-- 3. Rewrite the gutter: Numbers on the left, Signs on the right
+-- %C = Fold column (keeps fold markers on the far left if you use them)
+-- %= = Right-aligns the line numbers
+-- %l = The line number itself
+-- %s = The sign column (where gitsigns lives)
+vim.opt.statuscolumn = '%C%=%l %s'
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
 
