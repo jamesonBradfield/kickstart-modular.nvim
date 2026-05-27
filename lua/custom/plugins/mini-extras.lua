@@ -6,13 +6,26 @@ return {
     config = function(_, opts)
       -- The original kickstart config will run its own setups first (or alongside).
       -- You can safely initialize your extra modules here:
-      require('mini.surround').setup {
-        -- your custom surround config
+      require('mini.jump2d').setup {
+        -- Out-of-the-box mappings:
+        -- <Leader>j followed by a character to jump anywhere
+        mappings = {
+          start_jumping = '<leader>j',
+        },
       }
-
+      require('mini.surround').setup {
+        mappings = {
+          add = 'gza', -- Add surrounding in Normal and Visual modes
+          delete = 'gzd', -- Delete surrounding
+          find = 'gzf', -- Find surrounding (to the right)
+          find_left = 'gzF', -- Find surrounding (to the left)
+          highlight = 'gzh', -- Highlight surrounding
+          replace = 'gzr', -- Replace surrounding
+          update_n_lines = 'gzn', -- Update `n_lines`
+        },
+      }
       -- Custom filter to hide Godot sidecar files
       local filter_hide_godot = function(fs_entry) return not vim.endswith(fs_entry.name, '.uid') and not vim.endswith(fs_entry.name, '.import') end
-
       require('mini.files').setup {
         content = {
           filter = filter_hide_godot,
@@ -45,6 +58,7 @@ return {
           end, { buffer = buf_id, desc = 'Grapple toggle tag (mini.files)' })
         end,
       })
+
       require('mini.pick').setup {
         mappings = {
           -- Alternate navigation keys (like Telescope/fzf-lua style)
