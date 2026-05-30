@@ -164,6 +164,18 @@ return {
           ---@type lspconfig.settings.lua_ls
           settings = {
             Lua = {
+              workspace = {
+                checkThirdParty = false,
+                ignoreDir = {
+                  '.git',
+                  'node_modules',
+                  'target',
+                  'build',
+                },
+              },
+              telemetry = {
+                enable = false,
+              },
               format = { enable = false }, -- Disable formatting (formatting is done by stylua)
             },
           },

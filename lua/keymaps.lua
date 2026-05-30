@@ -10,8 +10,16 @@ vim.keymap.set({ 'n', 'v' }, '<C-f>', function()
   if not mf.close() then mf.open(vim.api.nvim_buf_get_name(0)) end
 end, { desc = 'Toggle mini.files' })
 vim.keymap.set({ 'n', 'v' }, '<leader>sh', function() require('mini.pick').builtin.help() end, { desc = 'Search Help' })
-
+vim.keymap.set({ 'n', 'v' }, '<leader>sc', function() require('mini.files').open(vim.fn.stdpath 'config') end, { desc = 'Search Config' })
+vim.keymap.set({ 'n', 'v' }, '<leader>sn', function() require('mini.files').open(vim.fn.expand '~/notes/') end, { desc = 'Search Notes' })
+-- [[ Scratch Buffer for Notes ]]
+vim.keymap.set('n', '<leader>bs', function()
+  vim.cmd 'enew' -- Open a new empty buffer
+  vim.bo.filetype = 'markdown' -- Set filetype so IWE/CodeCompanion engage immediately
+  vim.bo.swapfile = false -- Don't create a swapfile for a temporary scratchpad
+end, { desc = 'Open [B]uffer [S]cratch (Markdown)' })
 vim.keymap.set({ 'n', 'v' }, '<leader>cc', function() require('codecompanion').toggle() end, { desc = 'Toggle CodeCompanion' })
+vim.keymap.set({ 'n', 'v' }, '<leader>ca', '<cmd>CodeCompanionActions<CR>', { desc = 'CodeCompanion actions' })
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
 vim.diagnostic.config {

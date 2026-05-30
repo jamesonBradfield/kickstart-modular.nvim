@@ -4,14 +4,21 @@ return {
     -- Optional: If you want to change loading behavior or dependencies
     -- Otherwise, just use the config function to initialize new modules
     config = function(_, opts)
+      -- WARNING: ME NO LIKEY mini.jump2d!
+      --
       -- The original kickstart config will run its own setups first (or alongside).
       -- You can safely initialize your extra modules here:
-      require('mini.jump2d').setup {
-        -- Out-of-the-box mappings:
-        -- <Leader>j followed by a character to jump anywhere
-        mappings = {
-          start_jumping = '<leader>j',
-        },
+      -- require('mini.jump2d').setup {
+      --   -- Out-of-the-box mappings:
+      --   -- <Leader>j followed by a character to jump anywhere
+      --   mappings = {
+      --     start_jumping = '<leader>j',
+      --   },
+      -- }
+      require('mini.icons').setup()
+      require('mini.sessions').setup {
+        autowrite = true,
+        directory = vim.fn.stdpath 'data' .. '/sessions',
       }
       require('mini.surround').setup {
         mappings = {
@@ -39,6 +46,25 @@ return {
           use_as_default_explorer = true,
         },
       }
+      -- 1. Add this helper function somewhere before your autocommand
+      local map_split = function(buf_id, lhs, direction)
+        local rhs = function()
+          -- Get the window that mini.files is currently targeting
+          local cur_target = MiniFiles.get_explorer_state().target_window
+
+          -- Create a new window in the specified direction from that target
+          local new_target = vim.api.nvim_win_call(cur_target, function()
+            vim.cmd(direction .. ' split')
+            return vim.api.nvim_get_current_win()
+          end)
+
+          -- Set the new window as the destination and open the file
+          MiniFiles.set_target_window(new_target)
+          MiniFiles.go_in()
+        end
+
+        vim.keymap.set('n', lhs, rhs, { buffer = buf_id, desc = 'Split ' .. direction })
+      end
 
       -- Automatically attach Grapple keymap when mini.files opens
       vim.api.nvim_create_autocmd('User', {
@@ -46,6 +72,9 @@ return {
         callback = function(args)
           local buf_id = args.data.buf_id
 
+          -- Add the split keymaps (change <C-v> and <C-x> to whatever you prefer)
+          map_split(buf_id, '<C-v>', 'belowright vertical')
+          map_split(buf_id, '<C-x>', 'belowright horizontal')
           -- Use <leader>m to match your global Grapple toggle key
           vim.keymap.set('n', '<leader>m', function()
             local entry = MiniFiles.get_fs_entry()
@@ -56,6 +85,17 @@ return {
               vim.notify('Toggled Grapple tag: ' .. entry.name)
             end
           end, { buffer = buf_id, desc = 'Grapple toggle tag (mini.files)' })
+        end,
+      })
+      -- Force clean UTF-8 + LF for IWE notes, regardless of how the file gets written
+      vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufNewFile' }, {
+        pattern = '*.md',
+        callback = function(args)
+          local name = vim.api.nvim_buf_get_name(args.buf):gsub('\\', '/')
+          if name:match '/notes/' then
+            vim.bo[args.buf].fileencoding = 'utf-8'
+            vim.bo[args.buf].fileformat = 'unix'
+          end
         end,
       })
 
