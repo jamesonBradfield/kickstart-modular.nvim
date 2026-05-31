@@ -404,7 +404,7 @@ FORMATTING RULES:
 
     interactions = {
       chat = {
-        adapter = { name = 'deepseek', model = 'deepseek-chat' },
+        adapter = { name = 'deepseek', model = 'deepseek-chat', opts = { temperature = 0.2 } },
         opts = {
           ---@param ctx CodeCompanion.SystemPrompt.Context
           system_prompt = function(ctx)
@@ -450,7 +450,7 @@ USER PEDANTS — the user's non-negotiable architectural preferences:
           end,
         },
       },
-      inline = { adapter = { name = 'deepseek', model = 'deepseek-chat' } },
+      inline = { adapter = { name = 'deepseek', model = 'deepseek-chat', opts = { temperature = 0.2 } } },
     },
     mcp = {
       servers = {

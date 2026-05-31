@@ -14,7 +14,7 @@ return {
       filetype = { 'markdown' },
       theme = 'dark',
       update_on_change = true,
-      auto_close = false,
+      close_on_bdelete = true,
     },
     keys = {
       {

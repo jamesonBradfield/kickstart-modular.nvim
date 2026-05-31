@@ -127,13 +127,14 @@ return {
         -- pyright = {},
         -- rust_analyzer = {},
         --
-        -- TypeScript / JavaScript (works great with both React and Angular)
+        -- TypeScript / JavaScript / React (.tsx/.jsx handled automatically)
         ts_ls = {},
 
-        -- Angular Language Server (install globally via: npm i -g @angular/language-server)
+        -- Angular Language Server (Mason installs it; needs Angular project with node_modules)
         angularls = {},
 
-        stylua = {}, -- Used to format Lua code
+        -- ESLint as an LSP: surfaces lint errors inline, fixes on save via vim.lsp.buf.code_action
+        eslint = {},
 
         -- Special Lua Config, as recommended by neovim help docs
         lua_ls = {
@@ -191,7 +192,8 @@ return {
       -- You can press `g?` for help in this menu.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        -- You can add other tools here that you want Mason to install
+        'stylua',    -- Lua formatter (used by conform)
+        'prettierd', -- Fast prettier daemon (used by conform for JS/TS/CSS/HTML/JSON)
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
