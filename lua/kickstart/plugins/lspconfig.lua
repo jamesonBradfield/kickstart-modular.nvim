@@ -127,11 +127,11 @@ return {
         -- pyright = {},
         -- rust_analyzer = {},
         --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
+        -- TypeScript / JavaScript (works great with both React and Angular)
+        ts_ls = {},
+
+        -- Angular Language Server (install globally via: npm i -g @angular/language-server)
+        angularls = {},
 
         stylua = {}, -- Used to format Lua code
 
@@ -200,6 +200,18 @@ return {
         vim.lsp.config(name, server)
         vim.lsp.enable(name)
       end
+
+      -- GDScript LSP: built into the running Godot editor, not installable via Mason.
+      -- Godot must be open with the project loaded; port is set in
+      -- Editor > Editor Settings > Network > Language Server > Remote Port (default 6005).
+      vim.lsp.config('gdscript', {
+        cmd = vim.lsp.rpc.connect('127.0.0.1', 6005),
+        filetypes = { 'gdscript' },
+        root_dir = function(fname)
+          return vim.fs.root(fname, { 'project.godot', '.git' })
+        end,
+      })
+      vim.lsp.enable 'gdscript'
     end,
   },
 }

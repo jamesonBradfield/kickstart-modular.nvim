@@ -403,13 +403,59 @@ FORMATTING RULES:
     end)(),
 
     interactions = {
-      chat = { adapter = { name = 'deepseek', model = 'deepseek-chat' } },
+      chat = {
+        adapter = { name = 'deepseek', model = 'deepseek-chat' },
+        opts = {
+          ---@param ctx CodeCompanion.SystemPrompt.Context
+          system_prompt = function(ctx)
+            return ctx.default_system_prompt
+              .. string.format(
+                [[
+Additional context:
+All non-code text responses must be written in the %s language.
+The user's current working directory is %s.
+The current date is %s.
+The user's Neovim version is %s.
+The user is working on a %s machine. Please respond with system specific commands if applicable.
+
+RESPONSE STYLE — this overrides any urge to be thorough:
+- Lead with the answer or the code. No preamble ("Certainly", "Sure", "Great question"). Never restate my question back to me.
+- Explain only when I ask why/how, or when a choice is genuinely non-obvious. Cap explanation at 1-3 sentences.
+- No summary, recap, or "let me know if..." after a code block. Stop when the answer is complete.
+- When editing existing code, output only the changed lines or a minimal diff — not the whole file unless I ask.
+- If a request is ambiguous, ask ONE short clarifying question instead of guessing at length.
+- Match my register: terse question gets a terse answer.
+
+CODE BLOCKS:
+- Open and close code blocks with four backticks, language ID after the opening backticks. Do not wrap the whole reply in one block.
+- No line numbers or diff markers unless I ask.
+
+TOOL USE DISCIPLINE:
+- Do not search for files you have not been asked to find. Read only what you need; stop when you have enough context.
+- Do not ask a clarifying question if the answer is inferable from context or common sense.
+- If a task is clear, start it. Do not narrate a plan or ask for a "go-ahead".
+- Do not re-read a file you just edited to verify — if the edit succeeded, it succeeded.
+- No summaries after completing a task. Stop when the work is done.
+
+USER PEDANTS — the user's non-negotiable architectural preferences:
+- Godot: input polling (is_action_pressed, get_axis) belongs in _process or _unhandled_input, never in _physics_process. _physics_process reads state to apply forces; it does not determine state.
+- Godot: prefer enum flags (bit-masked or per-state consts) when multiple states can be active simultaneously, so state determination can live in _process.
+]],
+                ctx.language,
+                ctx.cwd,
+                ctx.date,
+                ctx.nvim_version,
+                ctx.os
+              )
+          end,
+        },
+      },
       inline = { adapter = { name = 'deepseek', model = 'deepseek-chat' } },
     },
     mcp = {
       servers = {
         iwe = {
-          cmd = { 'iwec.exe', '--project', 'C:/Users/mcraf/notes' },
+          cmd = { 'cmd.exe', '/c', 'cd /d C:\\Users\\mcraf\\notes && iwec.exe' },
         },
         sequential_thinking = {
           cmd = { 'C:/Users/mcraf/AppData/Roaming/npm/mcp-server-sequential-thinking.cmd' },

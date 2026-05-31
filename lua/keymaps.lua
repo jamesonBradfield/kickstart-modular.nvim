@@ -46,6 +46,75 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
+-- [[ Web Dev Server Keymaps ]]
+-- Quickly start/restart a Vite dev server (React / vanilla JS/TS)
+-- Opens a terminal split at the bottom running `npm run dev`
+-- If one is already running, it will be toggled instead of duplicated.
+--
+-- Usage:
+--   <leader>sv  — start Vite dev server
+--   <leader>sa  — start Angular CLI dev server
+--   <leader>sk  — kill any running dev server (sends SIGTERM)
+--
+local dev_server_buf = nil
+local dev_server_win = nil
+
+local function start_dev_server(cmd, name)
+  -- If the terminal is already open, just focus it
+  if dev_server_win and vim.api.nvim_win_is_valid(dev_server_win) then
+    vim.api.nvim_set_current_win(dev_server_win)
+    vim.notify('Dev server (' .. name .. ') is already running', vim.log.levels.INFO)
+    return
+  end
+
+  -- Open a new terminal at the bottom (10 rows tall)
+  vim.cmd 'botright 10 split'
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_win_set_buf(0, buf)
+  dev_server_win = vim.api.nvim_get_current_win()
+  dev_server_buf = buf
+
+  -- Start the terminal with the dev server command
+  vim.fn.termopen(cmd, {
+    on_exit = function()
+      -- Clean up references when the terminal exits
+      dev_server_buf = nil
+      dev_server_win = nil
+    end,
+  })
+
+  -- Start in insert mode so you see output immediately
+  vim.cmd 'startinsert'
+  vim.notify('Started ' .. name .. ' dev server', vim.log.levels.INFO)
+end
+
+vim.keymap.set('n', '<leader>sv', function()
+  start_dev_server('npm run dev', 'Vite')
+end, { desc = 'Start [V]ite dev server (npm run dev)' })
+
+vim.keymap.set('n', '<leader>sa', function()
+  start_dev_server('ng serve', 'Angular')
+end, { desc = 'Start [A]ngular dev server (ng serve)' })
+
+vim.keymap.set('n', '<leader>sk', function()
+  if dev_server_buf and vim.api.nvim_buf_is_valid(dev_server_buf) then
+    -- Send SIGTERM (Ctrl+C) to the running process
+    vim.api.nvim_chan_send(vim.bo[dev_server_buf].channel, '\03')
+    -- Close the terminal window after a short delay
+    vim.defer_fn(function()
+      if dev_server_win and vim.api.nvim_win_is_valid(dev_server_win) then
+        vim.api.nvim_win_close(dev_server_win, true)
+      end
+      dev_server_buf = nil
+      dev_server_win = nil
+      vim.notify('Dev server stopped', vim.log.levels.INFO)
+    end, 500)
+  else
+    vim.notify('No dev server is running', vim.log.levels.WARN)
+  end
+end, { desc = '[K]ill dev server (SIGTERM + close terminal)' })
+
+
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
 -- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')

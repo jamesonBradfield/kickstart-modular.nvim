@@ -10,7 +10,7 @@ return {
     config = function()
       require('nvim-treesitter.install').compilers = { "zig" }
       -- ensure basic parser are installed
-local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'yaml' }
+local parsers = { 'bash', 'c', 'diff', 'html', 'javascript', 'typescript', 'tsx', 'css', 'json', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'yaml' }
       require('nvim-treesitter').install(parsers)
 
       ---@param buf integer

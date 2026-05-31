@@ -21,7 +21,14 @@ return {
         -- You can specify filetypes to autoformat on save here:
         local enabled_filetypes = {
           lua = true,
-          -- python = true,
+          javascript = true,
+          typescript = true,
+          javascriptreact = true,
+          typescriptreact = true,
+          css = true,
+          scss = true,
+          html = true,
+          json = true,
         }
         if enabled_filetypes[vim.bo[bufnr].filetype] then
           return { timeout_ms = 500 }
@@ -38,8 +45,18 @@ return {
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         lua = {'stylua'},
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        -- JavaScript / TypeScript / React / Angular formatting
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        typescript = { 'prettierd', 'prettier', stop_after_first = true },
+        javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        css = { 'prettierd', 'prettier', stop_after_first = true },
+        scss = { 'prettierd', 'prettier', stop_after_first = true },
+        html = { 'prettierd', 'prettier', stop_after_first = true },
+        json = { 'prettierd', 'prettier', stop_after_first = true },
+        jsonc = { 'prettierd', 'prettier', stop_after_first = true },
+        markdown = { 'prettierd', 'prettier', stop_after_first = true },
+        yaml = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },
