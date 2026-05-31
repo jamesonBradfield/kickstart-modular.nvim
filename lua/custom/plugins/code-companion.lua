@@ -405,6 +405,13 @@ FORMATTING RULES:
     interactions = {
       chat = {
         adapter = { name = 'deepseek', model = 'deepseek-chat', opts = { temperature = 0.2 } },
+        slash_commands = {
+          ['prune'] = {
+            path = 'custom.cc_dcp',
+            description = 'DCP: drop duplicate and errored tool call pairs (zero LLM cost)',
+            opts = { contains_code = false },
+          },
+        },
         opts = {
           ---@param ctx CodeCompanion.SystemPrompt.Context
           system_prompt = function(ctx)
