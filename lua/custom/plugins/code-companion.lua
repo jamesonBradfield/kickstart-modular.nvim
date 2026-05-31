@@ -436,6 +436,7 @@ TOOL USE DISCIPLINE:
 - If a task is clear, start it. Do not narrate a plan or ask for a "go-ahead".
 - Do not re-read a file you just edited to verify — if the edit succeeded, it succeeded.
 - No summaries after completing a task. Stop when the work is done.
+- Prefix all run_command calls with `rtk` (e.g. `rtk cargo test`, `rtk git status`). RTK passes through unknown commands unchanged, so always use it.
 
 USER PEDANTS — the user's non-negotiable architectural preferences:
 - Godot: input polling (is_action_pressed, get_axis) belongs in _process or _unhandled_input, never in _physics_process. _physics_process reads state to apply forces; it does not determine state.
@@ -455,13 +456,13 @@ USER PEDANTS — the user's non-negotiable architectural preferences:
     mcp = {
       servers = {
         iwe = {
-          cmd = { 'cmd.exe', '/c', 'cd /d C:\\Users\\mcraf\\notes && iwec.exe' },
+          cmd = { 'mcp-rtk', '--', 'cmd.exe', '/c', 'cd /d C:\\Users\\mcraf\\notes && iwec.exe' },
         },
         sequential_thinking = {
-          cmd = { 'C:/Users/mcraf/AppData/Roaming/npm/mcp-server-sequential-thinking.cmd' },
+          cmd = { 'mcp-rtk', '--', 'C:/Users/mcraf/AppData/Roaming/npm/mcp-server-sequential-thinking.cmd' },
         },
         playwright = {
-          cmd = { 'npx', '@playwright/mcp@latest', '--browser=firefox' },
+          cmd = { 'mcp-rtk', '--', 'npx', '@playwright/mcp@latest', '--browser=firefox' },
         },
       },
       opts = { default_servers = { 'iwe', 'sequential_thinking' } },
